@@ -28,8 +28,7 @@
         <div class="form-group">
           <label>School</label>
           <div class="form-check">
-            <v-select :options="schoolOptions" label="name" v-model="user.school">
-            </v-select>
+            <v-select :options="schoolOptions" label="name" v-model="user.school"></v-select>
             <label class="form-check-label" for="exampleRadios1">Male</label>
           </div>
         </div>
@@ -41,6 +40,8 @@
 </template>
 
 <script>
+import UserServices from "../../api/users";
+
 export default {
   props: {
     userId: {
@@ -71,28 +72,16 @@ export default {
     submit: async function() {
       let endpoint, method;
 
-      if (this.editing) {
-        endpoint = `/users/${this.user.id}.json`;
-        method = "PUT";
-      } else {
-        endpoint = `/users.json`;
-        method = "POST";
-      }
-
       const userParams = this.user;
       userParams.school_id = this.user.school.id;
 
-      const result = await this.$axios({
-        url: endpoint,
-        method: method,
-        data: {
-          user: userParams
-        }
-      });
-
       if (this.editing) {
+        const result = await UserServices.updateUser(this.user.id, {
+          user: userParams
+        });
         this.$emit("user-updated", result.data);
       } else {
+        const result = await UserServices.createUser({ user: userParams });
         this.$emit("new-user-created", result.data);
       }
 

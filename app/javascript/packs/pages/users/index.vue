@@ -37,6 +37,7 @@
 
 <script>
 import UserItem from "../../components/Users/UserItem";
+import UserServices from '../../api/users'
 
 const perPageOptions = [10, 20, 30, 40, 50, 60];
 
@@ -70,9 +71,8 @@ export default {
         page: this.page,
         per_page: this.perPage
       };
-      const result = await this.$axios.get("users.json", {
-        params: params
-      });
+
+      const result = await UserServices.getUsers(params);
 
       this.usersList = result.data.users;
       // this.meta = result.data.meta;
