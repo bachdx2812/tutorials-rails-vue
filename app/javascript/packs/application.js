@@ -31,10 +31,14 @@ Vue.use(BootstrapVue)
 // Optionally install the BootstrapVue icon components plugin
 Vue.use(IconsPlugin)
 
+import store from './store';
+
 document.addEventListener('DOMContentLoaded', () => {
   const vue = new Vue({
     el: "#app",
+    store: store,
     components: {
+      Notifications: () => import("./components/Ultilities/Notifications"),
       UsersIndexPage: () => import("./pages/users")
     }
   });

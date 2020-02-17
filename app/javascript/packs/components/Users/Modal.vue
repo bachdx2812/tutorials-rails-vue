@@ -85,11 +85,21 @@ export default {
         this.$emit("new-user-created", result.data);
       }
 
+      this.user = {
+        name: "",
+        description: "",
+        gender: 1,
+        school: {}
+      };
+      this.editing = false;
+
       this.$bvModal.hide("modal-1");
     }
   },
   watch: {
     userId: async function() {
+      if (!this.userId) return;
+
       const result = await this.$axios.get(`/users/${this.userId}.json`);
       this.user = result.data;
       this.editing = true;

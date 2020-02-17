@@ -33,7 +33,10 @@
 import Item from "../../components/Users/Item";
 import Search from "../../components/Users/Search";
 
-import UserServices from '../../api/users'
+import UserServices from "../../api/users";
+
+import { createNamespacedHelpers } from "vuex";
+const { mapActions } = createNamespacedHelpers("global")
 
 export default {
   components: {
@@ -56,6 +59,7 @@ export default {
   },
   mounted: function() {},
   methods: {
+    ...mapActions(['addNotifications']),
     fetchUsersList: async function() {
       let params = {
         page: this.page,
@@ -76,6 +80,10 @@ export default {
     },
     newUserCreated: function(user) {
       this.usersList.unshift(user);
+      this.addNotifications({
+        content: "New user created !!!",
+        type: "info"
+      });
     },
     editUser: function(userId) {
       this.editingUserId = userId;
@@ -85,13 +93,14 @@ export default {
       let updatedIndex = this.usersList.findIndex(u => u.id === user.id);
 
       this.$set(this.usersList, updatedIndex, user);
+      this.editingUserId = null;
     },
     perPageChanged: function(perPage) {
       this.perPage = perPage;
       this.page = 1;
       this.fetchUsersList();
     }
-  },
+  }
 };
 </script>
 
