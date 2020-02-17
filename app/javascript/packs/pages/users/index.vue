@@ -1,21 +1,15 @@
 <template>
   <div>
-    <div class="input-group mb-3">
-      <div class="input-group-prepend">
-        <label class="input-group-text" for="inputGroupSelect01">Per Page:</label>
-      </div>
-      <select v-model="perPage">
-        <option v-for="option in perPageOptions" :key="option">{{option}}</option>
-      </select>
-    </div>
+    <Search v-on:per-page-changed="perPageChanged"></Search>
 
     <Paging :meta="meta" v-on:change-page="pageChanged"></Paging>
+
     <b-button v-b-modal.modal-1>Create New</b-button>
-    <UserModal
+    <Modal
       v-on:new-user-created="newUserCreated"
       :user-id="editingUserId"
       v-on:user-updated="userUpdated"
-    ></UserModal>
+    ></Modal>
 
     <table class="table">
       <thead id="test">
@@ -29,23 +23,24 @@
       </thead>
       <tbody>
         <!-- 20 items per page -->
-        <UserItem v-for="user in usersList" :key="user.id" :user="user" v-on:edit-user="editUser"></UserItem>
+        <Item v-for="user in usersList" :key="user.id" :user="user" v-on:edit-user="editUser"></Item>
       </tbody>
     </table>
   </div>
 </template>
 
 <script>
-import UserItem from "../../components/Users/UserItem";
-import UserServices from '../../api/users'
+import Item from "../../components/Users/Item";
+import Search from "../../components/Users/Search";
 
-const perPageOptions = [10, 20, 30, 40, 50, 60];
+import UserServices from '../../api/users'
 
 export default {
   components: {
-    UserItem,
+    Item,
+    Search,
     Paging: () => import("../../components/Share/Paging"),
-    UserModal: () => import("../../components/Users/UserModal")
+    Modal: () => import("../../components/Users/Modal")
   },
   data: function() {
     return {
@@ -57,15 +52,10 @@ export default {
     };
   },
   created: function() {
-    this.initConstants();
     this.fetchUsersList();
   },
   mounted: function() {},
   methods: {
-    initConstants: function() {
-      this.perPageOptions = perPageOptions;
-      // so on
-    },
     fetchUsersList: async function() {
       let params = {
         page: this.page,
@@ -95,14 +85,13 @@ export default {
       let updatedIndex = this.usersList.findIndex(u => u.id === user.id);
 
       this.$set(this.usersList, updatedIndex, user);
-    }
-  },
-  watch: {
-    perPage: function() {
+    },
+    perPageChanged: function(perPage) {
+      this.perPage = perPage;
       this.page = 1;
       this.fetchUsersList();
     }
-  }
+  },
 };
 </script>
 
