@@ -10,6 +10,8 @@
     </div>
 
     <Paging :meta="meta" v-on:change-page="pageChanged"></Paging>
+    <button @click="createNewUser()">Create new user</button>
+
     <table class="table">
       <thead id="test">
         <tr>
@@ -74,6 +76,27 @@ export default {
     pageChanged: function(page) {
       this.page = page;
       this.fetchUsersList();
+    },
+    createNewUser: async function() {
+      const tokenElement = document.querySelector('meta[name=csrf-token]')
+
+      await this.axios.post(
+        "users.json",
+        {
+          user: {
+            name: "test",
+            description: "test",
+            gender: 1,
+            school_id: 1
+          }
+        },
+        {
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRF-TOKEN": tokenElement ? tokenElement.content : null
+          }
+        }
+      );
     }
   },
   watch: {

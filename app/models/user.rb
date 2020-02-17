@@ -3,6 +3,9 @@
 class User < ApplicationRecord
   belongs_to :school, optional: true
 
+  validates :name, :description, presence: true
+  validates :name, length: { minimum: 5 }
+
   enum gender: {
     male: 1,
     female: 2
