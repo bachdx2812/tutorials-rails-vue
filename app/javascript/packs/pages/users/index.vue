@@ -10,7 +10,8 @@
     </div>
 
     <Paging :meta="meta" v-on:change-page="pageChanged"></Paging>
-    <button @click="createNewUser()">Create new user</button>
+    <b-button v-b-modal.modal-1>Create New</b-button>
+    <UserModal v-on:new-user-created="newUserCreated"></UserModal>
 
     <table class="table">
       <thead id="test">
@@ -38,7 +39,8 @@ const perPageOptions = [10, 20, 30, 40, 50, 60];
 export default {
   components: {
     UserItem,
-    Paging: () => import("../../components/Share/Paging")
+    Paging: () => import("../../components/Share/Paging"),
+    UserModal: () => import("../../components/Users/UserModal")
   },
   data: function() {
     return {
@@ -63,7 +65,7 @@ export default {
         page: this.page,
         per_page: this.perPage
       };
-      const result = await this.axios.get("users.json", {
+      const result = await this.$axios.get("users.json", {
         params: params
       });
 
@@ -77,26 +79,8 @@ export default {
       this.page = page;
       this.fetchUsersList();
     },
-    createNewUser: async function() {
-      const tokenElement = document.querySelector('meta[name=csrf-token]')
-
-      await this.axios.post(
-        "users.json",
-        {
-          user: {
-            name: "test",
-            description: "test",
-            gender: 1,
-            school_id: 1
-          }
-        },
-        {
-          headers: {
-            "X-Requested-With": "XMLHttpRequest",
-            "X-CSRF-TOKEN": tokenElement ? tokenElement.content : null
-          }
-        }
-      );
+    newUserCreated: function(user) {
+      this.usersList.unshift(user);
     }
   },
   watch: {

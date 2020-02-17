@@ -20,8 +20,8 @@ import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
 import './styles/application';
 
-import axios from 'axios';
-Vue.prototype.axios = axios;
+import axios from './axios';
+Vue.prototype.$axios = axios;
 
 // Install BootstrapVue
 Vue.use(BootstrapVue)
