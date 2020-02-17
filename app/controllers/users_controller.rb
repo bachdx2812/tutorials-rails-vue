@@ -23,11 +23,25 @@ class UsersController < ApplicationController
     end
   end
 
+  def show
+    render json: User.find(params[:id])
+  end
+
   def create
     user = User.new(user_params)
 
     if user.save
-      render json: user.to_json, status: :created
+      render json: user, status: :created
+    else
+      render json: user.errors.to_hash(true), status: :unprocessable_entity
+    end
+  end
+
+  def update
+    user = User.find(params[:id])
+
+    if user.update(user_params)
+      render json: user, status: :created
     else
       render json: user.errors.to_hash(true), status: :unprocessable_entity
     end

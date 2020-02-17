@@ -5,6 +5,9 @@
     <td>{{ user.description }}</td>
     <td>{{ user.gender }}</td>
     <td>{{ user.school }}</td>
+    <td>
+      <button type="button" class="btn btn-primary" @click="editUser()">Edit</button>
+    </td>
   </tr>
 </template>
 
@@ -14,6 +17,11 @@ export default {
     user: {
       type: Object,
       required: true
+    }
+  },
+  methods: {
+    editUser: function() {
+      this.$emit('edit-user', this.user.id);
     }
   }
 };

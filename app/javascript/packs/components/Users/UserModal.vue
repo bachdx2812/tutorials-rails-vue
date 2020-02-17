@@ -25,6 +25,15 @@
           </div>
         </div>
 
+        <div class="form-group">
+          <label>School</label>
+          <div class="form-check">
+            <v-select :options="schoolOptions" label="name" v-model="user.school">
+            </v-select>
+            <label class="form-check-label" for="exampleRadios1">Male</label>
+          </div>
+        </div>
+
         <button type="submit" class="btn btn-primary" @click.prevent="submit()">Submit</button>
       </form>
     </b-modal>
@@ -33,23 +42,68 @@
 
 <script>
 export default {
+  props: {
+    userId: {
+      type: Number,
+      required: false
+    }
+  },
   data: function() {
     return {
       user: {
         name: "",
         description: "",
-        gender: 1
-      }
+        gender: 1,
+        school: {}
+      },
+      editing: false,
+      schoolOptions: []
     };
   },
+  created: function() {
+    this.fetchSchoolsList();
+  },
   methods: {
+    fetchSchoolsList: async function() {
+      const result = await this.$axios.get("/schools.json");
+      this.schoolOptions = result.data;
+    },
     submit: async function() {
-      const result = await this.$axios.post("users.json", {
-        user: this.user 
+      let endpoint, method;
+
+      if (this.editing) {
+        endpoint = `/users/${this.user.id}.json`;
+        method = "PUT";
+      } else {
+        endpoint = `/users.json`;
+        method = "POST";
+      }
+
+      const userParams = this.user;
+      userParams.school_id = this.user.school.id;
+
+      const result = await this.$axios({
+        url: endpoint,
+        method: method,
+        data: {
+          user: userParams
+        }
       });
 
-      this.$emit('new-user-created', result.data);
-      this.$bvModal.hide('modal-1');
+      if (this.editing) {
+        this.$emit("user-updated", result.data);
+      } else {
+        this.$emit("new-user-created", result.data);
+      }
+
+      this.$bvModal.hide("modal-1");
+    }
+  },
+  watch: {
+    userId: async function() {
+      const result = await this.$axios.get(`/users/${this.userId}.json`);
+      this.user = result.data;
+      this.editing = true;
     }
   }
 };

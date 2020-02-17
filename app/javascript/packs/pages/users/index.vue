@@ -11,7 +11,11 @@
 
     <Paging :meta="meta" v-on:change-page="pageChanged"></Paging>
     <b-button v-b-modal.modal-1>Create New</b-button>
-    <UserModal v-on:new-user-created="newUserCreated"></UserModal>
+    <UserModal
+      v-on:new-user-created="newUserCreated"
+      :user-id="editingUserId"
+      v-on:user-updated="userUpdated"
+    ></UserModal>
 
     <table class="table">
       <thead id="test">
@@ -25,7 +29,7 @@
       </thead>
       <tbody>
         <!-- 20 items per page -->
-        <UserItem v-for="user in usersList" :key="user.id" :user="user"></UserItem>
+        <UserItem v-for="user in usersList" :key="user.id" :user="user" v-on:edit-user="editUser"></UserItem>
       </tbody>
     </table>
   </div>
@@ -47,7 +51,8 @@ export default {
       usersList: [],
       page: 1,
       perPage: 20,
-      meta: {}
+      meta: {},
+      editingUserId: null
     };
   },
   created: function() {
@@ -81,6 +86,15 @@ export default {
     },
     newUserCreated: function(user) {
       this.usersList.unshift(user);
+    },
+    editUser: function(userId) {
+      this.editingUserId = userId;
+      this.$bvModal.show("modal-1");
+    },
+    userUpdated: function(user) {
+      let updatedIndex = this.usersList.findIndex(u => u.id === user.id);
+
+      this.$set(this.usersList, updatedIndex, user);
     }
   },
   watch: {
